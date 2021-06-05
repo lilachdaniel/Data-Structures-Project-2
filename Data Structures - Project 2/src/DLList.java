@@ -1,5 +1,5 @@
-public class DLList<T> {
-    private DLNode head;
+public class DLList<K> {
+    private DLNode<K> head;
     private int size;
 
     public DLList() {
@@ -9,12 +9,12 @@ public class DLList<T> {
 
     public int getSize() { return this.size; }
 
-    public void add(T val) {
+    public void add(K val) {
         if (this.head == null) {
-            this.head = new DLNode(val, null, null);
+            this.head = new DLNode<K>(val, null, null);
         }
         else {
-            DLNode newNode = new DLNode(val, null, this.head);
+            DLNode<K> newNode = new DLNode<K>(val, null, this.head);
             this.head.prev = newNode;
             this.head = newNode;
         }
@@ -22,7 +22,7 @@ public class DLList<T> {
         this.size++;
     }
 
-    public void delete(DLNode toDelete) {
+    public void delete(DLNode<K> toDelete) {
         // if deleting the head
         if (this.head == toDelete) {
             this.head = toDelete.getNext();
@@ -43,27 +43,27 @@ public class DLList<T> {
         this.size--;
     }
 
-    public DLNode getFirst() {
+    public DLNode<K> getFirst() {
         return this.head;
     }
 
-    public class DLNode {
+    public class DLNode<T> {
         private T value;
-        private DLNode prev;
-        private DLNode next;
+        private DLNode<T> prev;
+        private DLNode<T> next;
 
-        public DLNode(T val, DLNode prev, DLNode next) {
+        public DLNode(T val, DLNode<T> prev, DLNode<T> next) {
             this.value = val;
             this.prev = prev;
             this.next = next;
         }
 
         public T getValue() { return this.value; }
-        public DLNode getPrev() { return this.prev; }
-        public DLNode getNext() { return this.next; }
+        public DLNode<T> getPrev() { return this.prev; }
+        public DLNode<T> getNext() { return this.next; }
 
-        public void setPrev(DLNode newPrev) { this.prev = newPrev; }
-        public void setNext(DLNode newNext) { this.next = newNext; }
+        public void setPrev(DLNode<T> newPrev) { this.prev = newPrev; }
+        public void setNext(DLNode<T> newNext) { this.next = newNext; }
         public boolean hasNext() { return this.next != null; }
         public boolean hasPrev() { return this.prev != null; }
 
