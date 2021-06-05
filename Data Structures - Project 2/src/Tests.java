@@ -3,8 +3,9 @@ public class Tests {
     //tests for MaxHeap
 
     public static void main(String[] args) {
-        testHeap(500, 20, 30);
-        testList(1, 500);
+        testHeap(20000, 40, 50);
+        // testList(100, 500);
+        // testHashTable(15,200,100);
     }
 
     public static void testHeap(int numHeap, int numIterations, int heapSize) {
@@ -72,15 +73,14 @@ public class Tests {
         }
     }
 
-
     public static void testDecreaseKey(MaxHeap heap) {
         int toDecreaseIndex = (int)(Math.random() * heap.getSize());
         Graph.Node toDecreaseNode = heap.getValue(toDecreaseIndex);
         int toDecreaseAmount = (int)(Math.random() * heap.getSize() * 100);
 
-//        if (toDecreaseAmount >= toDecreaseNode.getNeighborhoodWeight() - toDecreaseNode.getWeight()) {
-//            return;
-//        }
+        if (toDecreaseAmount >= toDecreaseNode.getNeighborhoodWeight() - toDecreaseNode.getWeight()) {
+            return;
+        }
 
         int prevKey = toDecreaseNode.getNeighborhoodWeight();
 
@@ -101,6 +101,9 @@ public class Tests {
     }
 
     public static void testDelete(MaxHeap heap) {
+        StringBuilder heapBefore = displayHeap(heap);
+        MaxHeap before = new MaxHeap(heap);
+
         int toDeleteIndex = (int)(Math.random() * heap.getSize());
         Graph.Node toDeleteNode = heap.getValue(toDeleteIndex);
         int prevSize = heap.getSize();
@@ -116,8 +119,18 @@ public class Tests {
         boolean valid = checkIfMaxHeap(heap);
 
         if (!valid) {
+            before.delete(toDeleteIndex);
             System.out.println("Error: heap is invalid after delete");
-            displayHeap(heap);
+            StringBuilder heapAfter = displayHeap(heap);
+
+            System.out.println("Attempted to delete id: " + toDeleteNode.getId());
+            System.out.println("Before: ");
+            System.out.println(heapBefore);
+            System.out.println("\n\n\n");
+            System.out.println("After: ");
+            System.out.println(heapAfter);
+            System.out.println("\n\n\n");
+
             return;
         }
 
@@ -133,6 +146,9 @@ public class Tests {
     }
 
     public static void testDeleteMax(MaxHeap heap) {
+        StringBuilder heapBefore = displayHeap(heap);
+        MaxHeap before = new MaxHeap(heap);
+
         Graph.Node toDeleteNode = heap.getValue(0);
         int prevSize = heap.getSize();
 
@@ -147,8 +163,16 @@ public class Tests {
         boolean valid = checkIfMaxHeap(heap);
 
         if (!valid) {
-            System.out.println("Error: heap is invalid after delete-min");
-            displayHeap(heap);
+            System.out.println("Error: heap is invalid after delete-max");
+            StringBuilder heapAfter = displayHeap(heap);
+
+            System.out.println("Attempted to delete id: " + toDeleteNode.getId());
+            System.out.println("Before: ");
+            System.out.println(heapBefore);
+            System.out.println("\n\n\n");
+            System.out.println("After: ");
+            System.out.println(heapAfter);
+            System.out.println("\n\n\n");
             return;
         }
 
@@ -167,6 +191,12 @@ public class Tests {
             int l = maxHeap.getLeft(i);
             int r = maxHeap.getRight(i);
 
+            try {
+                maxHeap.getKey(i);
+            }
+            catch (NullPointerException e) {
+                return false;
+            }
             if (l < maxHeap.getSize() && maxHeap.getKey(l) > maxHeap.getKey(i)) {
                 return false;
             }
@@ -189,9 +219,8 @@ public class Tests {
         return nodes;
     }
 
-
-    public static void displayHeap(MaxHeap heap) {
-        final int height = 4, width = 80;
+    public static StringBuilder displayHeap(MaxHeap heap) {
+        final int height = 5, width = 250;
         // final int height = 10, width = 128;
 
         int len = width * height * 2 + 2;
@@ -200,8 +229,11 @@ public class Tests {
             sb.append(i < len - 2 && i % width == 0 ? "\n" : ' ');
 
         displayR(heap, sb, width / 2, 1, width / 4, width, 0, " ");
-        System.out.println(sb);
-        System.out.println("\n\n\n");
+
+        return sb;
+
+//        System.out.println(sb);
+//        System.out.println("\n\n\n");
     }
 
     private static void displayR(MaxHeap heap, StringBuilder sb, int c, int r, int d, int w, int index,
@@ -266,7 +298,6 @@ public class Tests {
                     }
                 }
 
-                displayList(ourList);
             }
         }
 
@@ -311,4 +342,39 @@ public class Tests {
         System.out.println(str);
     }
 
+
+
+    public static void testHashTable(int numTables, int numIterations, int heapSize) {
+        for (int i = 0; i < numTables; i++) {
+            // create heap
+            Graph.Node[] nodes = getRandNodeArray(heapSize);
+            MaxHeap heap = new MaxHeap(nodes);
+
+            // create hash table
+            HashTable ht = new HashTable(heap.getHeapArray());
+
+            //check if all nodes exist
+            for (Graph.Node node : nodes) {
+                if (ht.find(node.getId()) == null) {
+                    System.out.println("Error - initializing hash table");
+                    return;
+                }
+            }
+
+            //random delete
+            for (int j = 0; j < numIterations; j++) {
+                int indOfNode = (int) (Math.random() * heapSize);
+                int toDelete = nodes[indOfNode].getId();
+
+                ht.delete(toDelete);
+
+                if (ht.find(toDelete) != null) {
+                    System.out.println("Error in delete");
+                    return;
+                }
+
+            }
+        }
+        System.out.println("success - hash table! :)");
+    }
 }
