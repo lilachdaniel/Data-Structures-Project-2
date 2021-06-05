@@ -10,7 +10,16 @@ public class MaxHeap {
         for (int i = this.size - 1; i > -1 ; i--) {
             heapifyDown(i);
         }
+    }
 
+    // ************* delete ***************
+    public MaxHeap(MaxHeap h) {
+        this.size = h.size;
+        this.heap = h.heap.clone();
+    }
+
+    public Graph.Node[] getHeapArray() {
+        return this.heap.clone();
     }
 
     public void delete(int i) {
@@ -41,8 +50,8 @@ public class MaxHeap {
     }
 
     public void decreaseKey(int i, int diff) {
-        if (i > -1 && i < size) {
-            //  && diff < this.heap[i].getNeighborhoodWeight() - this.heap[i].getWeight()
+        if (i > -1 && i < size && diff < this.heap[i].getNeighborhoodWeight() - this.heap[i].getWeight()) {
+
             this.heap[i].decreaseNeighborhoodWeight(diff);
             heapifyDown(i);
         }
