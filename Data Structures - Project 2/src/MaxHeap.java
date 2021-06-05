@@ -15,8 +15,17 @@ public class MaxHeap {
 
     public void delete(int i) {
         if (i > -1 && i < size) {
+            // if deleting the last node, decrease size and finish.
+            // no switching and no heapify needed
+            if (i == size - 1) {
+                this.heap[i] = null;
+                this.size--;
+                return;
+            }
             this.heap[i] = this.heap[this.size - 1];
             this.heap[this.size - 1] = null;
+
+            this.size--;
 
             //if my key is smaller than my parent's key, heapify me down
             if (getKey(getParent(i)) == -1 || getKey(i) < getKey(getParent(i))) {
@@ -24,22 +33,20 @@ public class MaxHeap {
             } else {
                 heapifyUp(i);
             }
-
-            this.size--;
         }
     }
 
-    public void deleteMin() {
+    public void deleteMax() {
         delete(0);
     }
 
     public void decreaseKey(int i, int diff) {
-        if (i > -1 && i < size && diff < this.heap[i].getNeighborhoodWeight() - this.heap[i].getWeight()) {
+        if (i > -1 && i < size) {
+            //  && diff < this.heap[i].getNeighborhoodWeight() - this.heap[i].getWeight()
             this.heap[i].decreaseNeighborhoodWeight(diff);
             heapifyDown(i);
         }
     }
-
 
     public void increaseKey (int i, int diff) {
         if (i > -1 && i < size) {
