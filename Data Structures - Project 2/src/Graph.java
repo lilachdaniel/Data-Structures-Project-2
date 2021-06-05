@@ -10,6 +10,9 @@ You are allowed to add classes, methods, and members as required.
  *
  */
 public class Graph {
+    private HashTable table;
+    private MaxHeap heap;
+
     /**
      * Initializes the graph on a given set of nodes. The created graph is empty, i.e. it has no edges.
      * You may assume that the ids of distinct nodes are distinct.
@@ -17,7 +20,8 @@ public class Graph {
      * @param nodes - an array of node objects
      */
     public Graph(Node [] nodes){
-        //TODO: implement this method.
+        this.heap = new MaxHeap(nodes);
+        this.table = new HashTable(this.heap.getHeapArray());
     }
 
     /**
@@ -26,8 +30,7 @@ public class Graph {
      * @return a Node object representing the correct node. If there is no node in the graph, returns 'null'.
      */
     public Node maxNeighborhoodWeight(){
-        //TODO: implement this method.
-        return null;
+        return this.heap.getMax();
     }
 
     /**
@@ -38,8 +41,7 @@ public class Graph {
      * Otherwise, the function returns -1.
      */
     public int getNeighborhoodWeight(int node_id){
-        //TODO: implement this method.
-        return 0;
+        return this.table.find(node_id).getNode().getNeighborhoodWeight();
     }
 
     /**
@@ -53,7 +55,23 @@ public class Graph {
      * @return returns 'true' if the function added an edge, otherwise returns 'false'.
      */
     public boolean addEdge(int node1_id, int node2_id){
-        //TODO: implement this method.
+        // update the nodes' neighbor lists
+        HashTable.HashNode hnode1 = this.table.find(node1_id);
+        Node.NeighborListNode newNeighbor1 = hnode1.getNode().addNewNeighbor(node2_id);
+
+        HashTable.HashNode hnode2 = this.table.find(node2_id);
+        Node.NeighborListNode newNeighbor2 = hnode2.getNode().addNewNeighbor(node1_id);
+
+        newNeighbor1.setTwin(newNeighbor2);
+        newNeighbor2.setTwin(newNeighbor1);
+
+        // update each node's neighborhood weight
+        int weight1 = hnode1.getNode().getWeight();
+        int weight2 = hnode2.getNode().getWeight();
+
+        this.heap.increaseKey(hnode1.getHeapIndex(), weight2);
+        this.heap.increaseKey(hnode2.getHeapIndex(), weight1);
+
         return false;
     }
 
@@ -68,6 +86,7 @@ public class Graph {
         return false;
     }
 
+    // ************* for tests only *****************
     public Node createNode(int id, int weight) {
         return new Node(id, weight);
     }
@@ -79,6 +98,7 @@ public class Graph {
         private int id;
         private int weight;
         private int nWeight;
+        private DLList<NeighborListNode> nList;
 
         /**
          * Creates a new node object, given its id and its weight.
@@ -89,6 +109,7 @@ public class Graph {
             this.id = id;
             this.weight = weight;
             this.nWeight = weight;
+            this.nList = new DLList<NeighborListNode>();
         }
 
         /**
@@ -119,12 +140,24 @@ public class Graph {
             this.nWeight -= diff;
         }
 
+        // DO NOT FORGET: this method leaves the new neighbor without a twin
+        private NeighborListNode addNewNeighbor(int neighborId) {
+            NeighborListNode newNode = new NeighborListNode(neighborId);
+            this.nList.add(newNode);
+            return newNode;
+        }
+
         private class NeighborListNode {
             private int neighborId;
             private NeighborListNode twin;
 
+            public NeighborListNode(int id) {
+                this.neighborId = id;
+            }
+
             public int getNeighborId() { return this.neighborId; }
             public NeighborListNode getTwin() { return this.twin; }
+            public void setTwin(NeighborListNode twin) { this.twin = twin; }
         }
     }
 }

@@ -51,7 +51,6 @@ public class MaxHeap {
 
     public void decreaseKey(int i, int diff) {
         if (i > -1 && i < size && diff < this.heap[i].getNeighborhoodWeight() - this.heap[i].getWeight()) {
-
             this.heap[i].decreaseNeighborhoodWeight(diff);
             heapifyDown(i);
         }
@@ -123,6 +122,9 @@ public class MaxHeap {
         return this.heap[i].getNeighborhoodWeight();
     }
 
+    public Graph.Node getMax() { return this.heap[0]; }
+
+    // *********** for tests only ***************
     public Graph.Node getValue(int i) {
         if (i >= this.size || this.heap[i] == null) {
             return null;

@@ -21,6 +21,7 @@ public class HashTable {
         }
     }
 
+    //
     private void insert(int heapIndex, Graph.Node node) {
         long index = (((long) node.getId() * this.a + this.b) % this.p) % this.table.length;
 
