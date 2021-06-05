@@ -1,8 +1,10 @@
+
 public class Tests {
     //tests for MaxHeap
 
     public static void main(String[] args) {
         testHeap(500, 20, 30);
+        testList(1, 500);
     }
 
     public static void testHeap(int numHeap, int numIterations, int heapSize) {
@@ -29,7 +31,6 @@ public class Tests {
                 testDecreaseKey(heap);
             }
 
-
             if (heap.getSize() != heapSize) {
                 System.out.println("Error: size changed");
             }
@@ -39,13 +40,13 @@ public class Tests {
                 double choice = Math.random();
 
                 if (choice < 0.1)
-                    testDeleteMin(heap);
+                    testDeleteMax(heap);
                 else
                     testDelete(heap);
             }
         }
 
-        System.out.println("success!");
+        System.out.println("MaxHeap - success!");
     }
 
     public static void testIncreaseKey(MaxHeap heap) {
@@ -77,9 +78,9 @@ public class Tests {
         Graph.Node toDecreaseNode = heap.getValue(toDecreaseIndex);
         int toDecreaseAmount = (int)(Math.random() * heap.getSize() * 100);
 
-        if (toDecreaseAmount >= toDecreaseNode.getNeighborhoodWeight() - toDecreaseNode.getWeight()) {
-            return;
-        }
+//        if (toDecreaseAmount >= toDecreaseNode.getNeighborhoodWeight() - toDecreaseNode.getWeight()) {
+//            return;
+//        }
 
         int prevKey = toDecreaseNode.getNeighborhoodWeight();
 
@@ -131,11 +132,11 @@ public class Tests {
 
     }
 
-    public static void testDeleteMin(MaxHeap heap) {
+    public static void testDeleteMax(MaxHeap heap) {
         Graph.Node toDeleteNode = heap.getValue(0);
         int prevSize = heap.getSize();
 
-        heap.deleteMin();
+        heap.deleteMax();
 
         if (heap.getSize() + 1 != prevSize) {
             System.out.println("Error: *size* field is invalid after delete-min");
@@ -218,4 +219,96 @@ public class Tests {
             displayR(heap, sb, c + d, r + 2, d / 2, w, heap.getRight(index), "\\ ");
         }
     }
+
+
+
+    public static void testList(int numList, int numIterations) {
+        for (int i = 0; i < numList; i++) {
+            DLList ourList = new DLList();
+
+            for (int j = 0; j < numIterations; j++) {
+
+                double action = Math.random();
+
+                // add
+                if (action < 0.5 || ourList.getSize() == 0) {
+                    ourList.add(j);
+
+                    if (!isNumInList(ourList, j, true)) {
+                        displayList(ourList);
+                        System.out.println("Error after add - node not in list");
+                    }
+
+                    if (!isListValid(ourList)) {
+                        displayList(ourList);
+                        System.out.println("Error after add - size is false");
+                    }
+                }
+                // delete
+                else {
+                    int randIndex = (int)(Math.random() * ourList.getSize());
+                    DLList.DLNode toDelete = ourList.getFirst();
+
+                    for (int k = 0; k < randIndex; k++) {
+                        toDelete = toDelete.getNext();
+                    }
+
+                    ourList.delete(toDelete);
+
+                    if (!isNumInList(ourList, (int)(toDelete.getValue()), false)) {
+                        displayList(ourList);
+                        System.out.println("Error after delete - node still in list");
+                    }
+
+                    if (!isListValid(ourList)) {
+                        displayList(ourList);
+                        System.out.println("Error after delete - size is false");
+                    }
+                }
+
+                displayList(ourList);
+            }
+        }
+
+        System.out.println("DLList - success!");
+    }
+
+    public static boolean isNumInList(DLList list, int num, boolean inList) {
+        DLList.DLNode curr = list.getFirst();
+
+        while (curr != null) {
+            if ((int)(curr.getValue()) == num) {
+                return inList;
+            }
+            curr = curr.getNext();
+        }
+
+        return !inList;
+    }
+
+    public static boolean isListValid(DLList list) {
+        int actualSize = 0;
+        DLList.DLNode curr = list.getFirst();
+
+        while (curr != null) {
+            actualSize++;
+            curr = curr.getNext();
+        }
+
+        return actualSize == list.getSize();
+    }
+
+    public static void displayList(DLList list) {
+        String str = "";
+        DLList.DLNode curr = list.getFirst();
+
+        while (curr != null) {
+            str += "[" + curr.getValue().toString() + "] --> ";
+
+            curr = curr.getNext();
+        }
+
+        System.out.println(str);
+    }
+
 }

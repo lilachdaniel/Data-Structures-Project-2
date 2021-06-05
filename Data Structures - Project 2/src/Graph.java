@@ -118,6 +118,14 @@ public class Graph {
         public void decreaseNeighborhoodWeight(int diff) {
             this.nWeight -= diff;
         }
+
+        private class NeighborListNode {
+            private int neighborId;
+            private NeighborListNode twin;
+
+            public int getNeighborId() { return this.neighborId; }
+            public NeighborListNode getTwin() { return this.twin; }
+        }
     }
 }
 
