@@ -3,9 +3,11 @@ public class Tests {
     //tests for MaxHeap
 
     public static void main(String[] args) {
-        testHeap(20000, 40, 50);
+        testHeap(200, 60, 50);
         // testList(100, 500);
-        // testHashTable(15,200,100);
+        testHashTable(15,200,100);
+
+        testGraph(20000, 400, 200);
     }
 
     public static void testHeap(int numHeap, int numIterations, int heapSize) {
@@ -209,18 +211,18 @@ public class Tests {
     }
 
     public static Graph.Node[] getRandNodeArray(int size) {
-        Graph g = new Graph(new Graph.Node[size]);
+//        Graph g = new Graph(new Graph.Node[size]);
         Graph.Node[] nodes = new Graph.Node[size];
 
         for (int j = 0; j < size; j++) {
-            nodes[j] = g.createNode(j, (int)(Math.random() * (size * 100)));
+            nodes[j] = new Graph.Node(j, (int)(Math.random() * (size * 100)));
         }
 
         return nodes;
     }
 
     public static StringBuilder displayHeap(MaxHeap heap) {
-        final int height = 5, width = 250;
+        final int height = 5, width = 80;
         // final int height = 10, width = 128;
 
         int len = width * height * 2 + 2;
@@ -253,95 +255,94 @@ public class Tests {
     }
 
 
-
-    public static void testList(int numList, int numIterations) {
-        for (int i = 0; i < numList; i++) {
-            DLList ourList = new DLList();
-
-            for (int j = 0; j < numIterations; j++) {
-
-                double action = Math.random();
-
-                // add
-                if (action < 0.5 || ourList.getSize() == 0) {
-                    ourList.add(j);
-
-                    if (!isNumInList(ourList, j, true)) {
-                        displayList(ourList);
-                        System.out.println("Error after add - node not in list");
-                    }
-
-                    if (!isListValid(ourList)) {
-                        displayList(ourList);
-                        System.out.println("Error after add - size is false");
-                    }
-                }
-                // delete
-                else {
-                    int randIndex = (int)(Math.random() * ourList.getSize());
-                    DLList.DLNode toDelete = ourList.getFirst();
-
-                    for (int k = 0; k < randIndex; k++) {
-                        toDelete = toDelete.getNext();
-                    }
-
-                    ourList.delete(toDelete);
-
-                    if (!isNumInList(ourList, (int)(toDelete.getValue()), false)) {
-                        displayList(ourList);
-                        System.out.println("Error after delete - node still in list");
-                    }
-
-                    if (!isListValid(ourList)) {
-                        displayList(ourList);
-                        System.out.println("Error after delete - size is false");
-                    }
-                }
-
-            }
-        }
-
-        System.out.println("DLList - success!");
-    }
-
-    public static boolean isNumInList(DLList list, int num, boolean inList) {
-        DLList.DLNode curr = list.getFirst();
-
-        while (curr != null) {
-            if ((int)(curr.getValue()) == num) {
-                return inList;
-            }
-            curr = curr.getNext();
-        }
-
-        return !inList;
-    }
-
-    public static boolean isListValid(DLList list) {
-        int actualSize = 0;
-        DLList.DLNode curr = list.getFirst();
-
-        while (curr != null) {
-            actualSize++;
-            curr = curr.getNext();
-        }
-
-        return actualSize == list.getSize();
-    }
+//
+//    public static void testList(int numList, int numIterations) {
+//        for (int i = 0; i < numList; i++) {
+//            DLList ourList = new DLList();
+//
+//            for (int j = 0; j < numIterations; j++) {
+//
+//                double action = Math.random();
+//
+//                // add
+//                if (action < 0.5 || ourList.getSize() == 0) {
+//                    ourList.add(j);
+//
+//                    if (!isNumInList(ourList, j, true)) {
+//                        displayList(ourList);
+//                        System.out.println("Error after add - node not in list");
+//                    }
+//
+//                    if (!isListValid(ourList)) {
+//                        displayList(ourList);
+//                        System.out.println("Error after add - size is false");
+//                    }
+//                }
+//                // delete
+//                else {
+//                    int randIndex = (int)(Math.random() * ourList.getSize());
+//                    DLList.DLNode toDelete = ourList.getFirst();
+//
+//                    for (int k = 0; k < randIndex; k++) {
+//                        toDelete = toDelete.getNext();
+//                    }
+//
+//                    ourList.delete(toDelete);
+//
+//                    if (!isNumInList(ourList, (int)(toDelete.getValue()), false)) {
+//                        displayList(ourList);
+//                        System.out.println("Error after delete - node still in list");
+//                    }
+//
+//                    if (!isListValid(ourList)) {
+//                        displayList(ourList);
+//                        System.out.println("Error after delete - size is false");
+//                    }
+//                }
+//
+//            }
+//        }
+//
+//        System.out.println("DLList - success!");
+//    }
+//
+//    public static boolean isNumInList(DLList list, int num, boolean inList) {
+//        DLList.DLNode curr = list.getFirst();
+//
+//        while (curr != null) {
+//            if ((int)(curr.getValue()) == num) {
+//                return inList;
+//            }
+//            curr = curr.getNext();
+//        }
+//
+//        return !inList;
+//    }
+//
+//    public static boolean isListValid(DLList list) {
+//        int actualSize = 0;
+//        DLList.DLNode curr = list.getFirst();
+//
+//        while (curr != null) {
+//            actualSize++;
+//            curr = curr.getNext();
+//        }
+//
+//        return actualSize == list.getSize();
+//    }
 
     public static void displayList(DLList list) {
         String str = "";
         DLList.DLNode curr = list.getFirst();
 
         while (curr != null) {
-            str += "[" + curr.getValue().toString() + "] --> ";
+            str += "[" + curr.getGraphNode().getId() + "] --> ";
 
             curr = curr.getNext();
         }
 
         System.out.println(str);
     }
-
 
 
     public static void testHashTable(int numTables, int numIterations, int heapSize) {
@@ -376,5 +377,223 @@ public class Tests {
             }
         }
         System.out.println("success - hash table! :)");
+    }
+
+
+
+
+
+    public static void testGraph(int numGraphs, int numIterations, int graphSize) {
+        for (int i = 0; i < numGraphs; i++) {
+            Graph.Node[] nodes = getRandNodeArray(graphSize);
+            Graph g = new Graph(nodes);
+
+            boolean[] deleted = new boolean[graphSize];
+            int numDeleted = 0;
+
+            for (int j = 0; j < numIterations; j++) {
+                double  action = Math.random();
+                String actionStr = "addEdge";
+
+                // if true, delete
+                if (action < 0.2 && numDeleted < graphSize) {
+                    actionStr = "delete";
+                   boolean res = testDelete(g, nodes, deleted);
+                   if (res) {
+                       numDeleted++;
+                   }
+                }
+                // else, addEdge
+                else {
+                    testAddEdge(g, nodes, deleted);
+                }
+
+
+                if (!checkMaxWeightValid(g, nodes, deleted)) {
+                    System.out.println("Error - graph's maxWeight does not match heap data");
+                    System.out.println("Last op: " + actionStr);
+                    displayGraph(g, nodes, deleted);
+                    return;
+                }
+
+                if (!checkAllWeightsValid(g, nodes, deleted)) {
+                    System.out.println("Error - graph node's weight is wrong");
+                    System.out.println("Last op: " + actionStr);
+                    displayGraph(g, nodes, deleted);
+                    return;
+                }
+            }
+        }
+
+        System.out.println("success - Graph!");
+    }
+
+    public static boolean testDelete(Graph g, Graph.Node[] nodes, boolean[] deleted) {
+        int toDeleteIndex = (int)(Math.random() * nodes.length);
+
+        if (deleted[toDeleteIndex]) {
+            return false;
+        }
+
+        Graph.Node toDeleteNode = nodes[toDeleteIndex];
+        deleted[toDeleteIndex] = true;
+
+
+        boolean result = g.deleteNode(toDeleteNode.getId());
+
+        if (!result) {
+            System.out.println("Error - delete did not succeed");
+            displayGraph(g, nodes, deleted);
+            return result;
+        }
+
+        // check that the node was removed from heap
+        for (int i = 0; i < g.heap.getSize(); i++) {
+            if (g.heap.getValue(0) == toDeleteNode) {
+                System.out.println("Error - delete did not delete from heap");
+                displayGraph(g, nodes, deleted);
+                return result;
+            }
+        }
+
+        // check that the node was removed from hashtable
+        if (g.table.find(toDeleteNode.getId()) != null) {
+            System.out.println("Error - delete did not delete from table");
+            displayGraph(g, nodes, deleted);
+            return result;
+        }
+
+        // check that the node was removed from all neighbor lists
+        for (int i = 0; i < nodes.length; i++) {
+            if (!deleted[i] && i != toDeleteIndex) {
+                for (NeighborsDLList.NeighborNode nnode : nodes[i].getNList()) {
+                    if (nnode.getGraphNode() == toDeleteNode) {
+                        System.out.println("Error - delete did not remove from neighbor list");
+                        displayGraph(g, nodes, deleted);
+                        return result;
+
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static void testAddEdge(Graph g, Graph.Node[] nodes, boolean[] deleted) {
+        int node1Index = (int)(Math.random() * nodes.length);
+        int node2Index = (int)(Math.random() * nodes.length);
+        Graph.Node node1 = nodes[node1Index];
+        Graph.Node node2 = nodes[node2Index];
+        if (node1 == node2) {
+            return;
+        }
+
+        // if one of the nodes was deleted, expect "false"
+        if (deleted[node1Index] || deleted[node2Index]) {
+            boolean res = g.addEdge(node1.getId(), node2.getId());
+
+            if (res) {
+                System.out.println("Error - graph edge added when not supposed to");
+                displayGraph(g, nodes, deleted);
+            }
+        }
+        else {
+            // make sure the edge does not exist yet
+            for (NeighborsDLList.NeighborNode nnode : node1.getNList()) {
+                if (nnode.getGraphNode() == node2) {
+                    return;
+                }
+            }
+
+            // perform addition
+            boolean res = g.addEdge(node1.getId(), node2.getId());
+
+            // if returned false, print error
+            if (!res) {
+                System.out.println("Error - graph edge *not* added: " + node1.getId() + " , " + node2.getId());
+                displayGraph(g, nodes, deleted);
+            }
+
+            // make sure the neighbor lists were updated
+
+            boolean found = false;
+            for (NeighborsDLList.NeighborNode nnode : node1.getNList()) {
+                if (nnode.getGraphNode() == node2) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                System.out.println("Error - new edge does not apprear in neighbor list: " +
+                                   node1.getId() + " , " + node2.getId());
+                displayGraph(g, nodes, deleted);
+            }
+
+            found = false;
+            for (NeighborsDLList.NeighborNode nnode : node2.getNList()) {
+                if (nnode.getGraphNode() == node1) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                System.out.println("Error - new edge does not apprear in neighbor list: " +
+                        node1.getId() + " , " + node2.getId());
+                displayGraph(g, nodes, deleted);
+            }
+        }
+    }
+
+    public static boolean checkMaxWeightValid(Graph g, Graph.Node[] nodes, boolean[] deleted) {
+        if (g.heap.getSize() == 0) {
+            return true;
+        }
+        int maxNWeight = 0;
+
+        for (int i = 0; i < nodes.length; i++) {
+            if (!deleted[i]) {
+                if (nodes[i].getNeighborhoodWeight() > maxNWeight) {
+                    maxNWeight = nodes[i].getNeighborhoodWeight();
+                }
+            }
+        }
+
+        return g.maxNeighborhoodWeight().getNeighborhoodWeight() == maxNWeight;
+    }
+
+    public static boolean checkAllWeightsValid(Graph g, Graph.Node[] nodes, boolean[] deleted) {
+        for (int i = 0; i < nodes.length; i++) {
+            if (!deleted[i]) {
+                // acuumulate the weight from all neighbors (using neighbor list)
+                int weightFromNeighborList = nodes[i].getWeight();
+                for (NeighborsDLList.NeighborNode nnode : nodes[i].getNList()) {
+                    weightFromNeighborList += nnode.getGraphNode().getWeight();
+                }
+
+                // check if accumulated weight matches the node's nWeight field
+                if (nodes[i].getNeighborhoodWeight() != weightFromNeighborList) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public static void displayGraph(Graph g, Graph.Node[] nodes, boolean[] deleted) {
+        System.out.println(displayHeap(g.heap));
+        for (int i = 0; i < nodes.length; i++) {
+            if (!deleted[i]) {
+                System.out.print("\n(" + nodes[i].getId() + "," + nodes[i].getWeight() + ")" + ": ");
+                displayList(nodes[i].getNList());
+            }
+            else {
+                System.out.print("\nXXX (" + nodes[i].getId() + "," + nodes[i].getWeight() + ")" + ": ");
+                displayList(nodes[i].getNList());
+            }
+        }
     }
 }
