@@ -10,8 +10,9 @@ You are allowed to add classes, methods, and members as required.
  *
  */
 public class Graph {
-    private HashTable table;
-    private MaxHeap heap;
+    public HashTable table;
+    public MaxHeap heap;
+    private int numEdges;
 
     /**
      * Initializes the graph on a given set of nodes. The created graph is empty, i.e. it has no edges.
@@ -21,7 +22,8 @@ public class Graph {
      */
     public Graph(Node [] nodes){
         this.heap = new MaxHeap(nodes);
-        this.table = new HashTable(this.heap.getHeapArray());
+        this.table = new HashTable(nodes);
+        this.numEdges = 0;
     }
 
     /**
@@ -41,7 +43,7 @@ public class Graph {
      * Otherwise, the function returns -1.
      */
     public int getNeighborhoodWeight(int node_id){
-        return this.table.find(node_id).getNode().getNeighborhoodWeight();
+        return this.table.find(node_id).getNeighborhoodWeight();
     }
 
     /**
@@ -55,24 +57,34 @@ public class Graph {
      * @return returns 'true' if the function added an edge, otherwise returns 'false'.
      */
     public boolean addEdge(int node1_id, int node2_id){
-        // update the nodes' neighbor lists
-        HashTable.HashNode hnode1 = this.table.find(node1_id);
-        Node.NeighborListNode newNeighbor1 = hnode1.getNode().addNewNeighbor(node2_id);
+        //check if nodes exist in the graph
+        if (this.table.find(node1_id) == null ||  this.table.find(node2_id) == null) {
+            return false;
+        }
 
-        HashTable.HashNode hnode2 = this.table.find(node2_id);
-        Node.NeighborListNode newNeighbor2 = hnode2.getNode().addNewNeighbor(node1_id);
+        // update the nodes' neighbor lists
+        Node node1 = this.table.find(node1_id);
+        Node node2 = this.table.find(node2_id);
+
+        NeighborsDLList neighbors1 = node1.getNList();
+        NeighborsDLList neighbors2 = node2.getNList();
+
+        NeighborsDLList.NeighborNode newNeighbor1 = neighbors1.addNewNeighbor(node2);
+        NeighborsDLList.NeighborNode newNeighbor2 = neighbors2.addNewNeighbor(node1);
 
         newNeighbor1.setTwin(newNeighbor2);
         newNeighbor2.setTwin(newNeighbor1);
 
         // update each node's neighborhood weight
-        int weight1 = hnode1.getNode().getWeight();
-        int weight2 = hnode2.getNode().getWeight();
+        int weight1 = node1.getWeight();
+        int weight2 = node2.getWeight();
 
-        this.heap.increaseKey(hnode1.getHeapIndex(), weight2);
-        this.heap.increaseKey(hnode2.getHeapIndex(), weight1);
+        this.heap.increaseKey(node1.getHeapIndex(), weight2);
+        this.heap.increaseKey(node2.getHeapIndex(), weight1);
 
-        return false;
+        this.numEdges++;
+
+        return true;
     }
 
     /**
@@ -82,23 +94,63 @@ public class Graph {
      * @return returns 'true' if the function deleted a node, otherwise returns 'false'
      */
     public boolean deleteNode(int node_id){
-        //TODO: implement this method.
-        return false;
+        Node node = this.table.find(node_id);
+
+        if (node == null) {
+            return false;
+        }
+
+        for (NeighborsDLList.NeighborNode nnode : node.getNList()) {  // nnode     = representation of edge in *my* list
+
+            NeighborsDLList.NeighborNode twinNnode = nnode.getTwin(); // twinNnode = representation of edge in *his* list
+
+            Node twin = nnode.getGraphNode();                         // twin      = Graph.Node object of neighbor
+
+            // delete "me" from my neighbor's list
+            twin.getNList().delete(twinNnode);
+
+            this.numEdges--;
+
+            // decrease neighbor's key
+            this.heap.decreaseKey(twin.getHeapIndex(), node.getWeight());
+        }
+
+        // commit suicide
+        this.heap.delete(node.getHeapIndex());
+        this.table.delete(node.getId());
+
+        return true;
     }
 
-    // ************* for tests only *****************
-    public Node createNode(int id, int weight) {
-        return new Node(id, weight);
+    /**
+     * Returns the number of nodes currently in the graph.
+     * @return the number of nodes in the graph.
+     */
+    public int getNumNodes(){
+        return this.heap.getSize();
     }
+
+    /**
+     * Returns the number of edges currently in the graph.
+     * @return the number of edges currently in the graph.
+     */
+    public int getNumEdges(){ return this.numEdges; }
+
+    // ************* for tests only *****************
+//    public Node createNode(int id, int weight) {
+//        return new Node(id, weight);
+//    }
 
     /**
      * This class represents a node in the graph.
      */
-    public class Node{
+    public static class Node{
         private int id;
         private int weight;
         private int nWeight;
-        private DLList<NeighborListNode> nList;
+        private NeighborsDLList nList;
+        private int heapIndex;
+
 
         /**
          * Creates a new node object, given its id and its weight.
@@ -109,7 +161,8 @@ public class Graph {
             this.id = id;
             this.weight = weight;
             this.nWeight = weight;
-            this.nList = new DLList<NeighborListNode>();
+            this.nList = new NeighborsDLList();
+            this.heapIndex = -1;
         }
 
         /**
@@ -140,25 +193,14 @@ public class Graph {
             this.nWeight -= diff;
         }
 
-        // DO NOT FORGET: this method leaves the new neighbor without a twin
-        private NeighborListNode addNewNeighbor(int neighborId) {
-            NeighborListNode newNode = new NeighborListNode(neighborId);
-            this.nList.add(newNode);
-            return newNode;
-        }
+        public int getHeapIndex() {  return this.heapIndex;  }
 
-        private class NeighborListNode {
-            private int neighborId;
-            private NeighborListNode twin;
+        public void setHeapIndex(int heapIndex) {  this.heapIndex = heapIndex;  }
 
-            public NeighborListNode(int id) {
-                this.neighborId = id;
-            }
+        public NeighborsDLList getNList() {    return this.nList;    }
 
-            public int getNeighborId() { return this.neighborId; }
-            public NeighborListNode getTwin() { return this.twin; }
-            public void setTwin(NeighborListNode twin) { this.twin = twin; }
-        }
+
+
     }
 }
 
