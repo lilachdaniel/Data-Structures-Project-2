@@ -1,39 +1,86 @@
+import java.util.Random;
+
 public class Measurements {
     public static void main(String[] args) {
+        Random rand = new Random();
+
         for (int i = 6; i < 21; i++) {
+
+            System.out.print(i + ":\t");
 
             int numNodes = (int)Math.pow(2, i);
 
-            Graph g = new Graph(getNodes(numNodes));
+            Graph g = createGraph(numNodes);
 
-            boolean[][] edges = new boolean[numNodes][numNodes];
-
-
-            for (int k = 0; k < numNodes; k++) {
-                int n1 = (int)(Math.random() * numNodes);
-                int n2 = (int)(Math.random() * numNodes);
-
-                while (edges[n1][n2]) {
-                    n1 = (int)(Math.random() * numNodes);
-                    n2 = (int)(Math.random() * numNodes);
-                }
-
-                edges[n1][n2] = true;
-                g.addEdge(n1, n2);
-            }
+            System.out.println("highest rank is: " + (g.maxNeighborhoodWeight().getNeighborhoodWeight() - 1));
         }
 
         System.out.println("done");
     }
 
-
-    public static Graph.Node[] getNodes(int size) {
+    public static Graph createGraph(int size) {
         Graph.Node[] nodes = new Graph.Node[size];
 
         for (int j = 0; j < size; j++) {
             nodes[j] = new Graph.Node(j, 1);
         }
 
-        return nodes;
+        Graph g = new Graph(nodes);
+
+        Pair[] toBeEdge = getRandEdges(size, size);
+
+        for (Pair p : toBeEdge) {
+            g.addEdge(p.x, p.y);
+        }
+
+        return g;
     }
+
+    public static Pair[] getRandEdges(int edgeNum, int graphSize) {
+        long range = (long)((long)graphSize * (long)(graphSize-1) / 2);
+
+        Pair[] edges = new Pair[edgeNum];
+
+        long[] choices = new long[edgeNum];   // maintained to be sorted
+
+        for (int i = 0; i < edgeNum; i++)
+        {
+            // generate random number from the altered range (altered according to exclusions)
+            long newChoice = (long)(Math.random() * (range - i)) + 1;
+
+            // alter newChoicie according to the exclusions
+            int index = 0;
+            while (index < i && choices[index] <= newChoice) {
+                newChoice++;
+                index++;
+            }
+
+            // maintain 'choices' array in a sorted order
+            long toInsert = newChoice;
+            while (index < i) {
+                long temp = choices[index];
+                choices[index] = toInsert;
+                toInsert = temp;
+
+                index++;
+            }
+            choices[i] = toInsert;
+
+            // calculate the pair that matches the new random number
+            // https://stackoverflow.com/questions/15793172/efficiently-generating-unique-pairs-of-integers
+            // https://en.wikipedia.org/wiki/Pairing_function
+            int x = (int)(Math.sqrt((long)(8 * (newChoice - 1) + 1)) / 2 + 1.5);
+            int y = (int)(newChoice - (x-1) * (long)(x-2) / 2);
+            edges[i] = new Pair(x-1,y-1);
+        }
+
+        return edges;
+    }
+}
+
+class Pair {
+    int x;
+    int y;
+
+    public Pair(int x, int y) { this.x = x ; this.y = y; }
 }
