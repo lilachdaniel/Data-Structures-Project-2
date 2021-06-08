@@ -4,7 +4,13 @@ public class MaxHeap {
 
     public MaxHeap(Graph.Node[] nodes) {
         this.size = nodes.length;
-        this.heap = nodes.clone();
+        this.heap = new Graph.Node[this.size];
+
+        //create heap and maintain node's heap index
+        for (int i = 0; i < this.size; i++) {
+            this.heap[i] = nodes[i];
+            nodes[i].setHeapIndex(i);
+        }
 
         //turn the array into a max heap
         for (int i = this.size - 1; i > -1 ; i--) {
@@ -18,6 +24,7 @@ public class MaxHeap {
         this.heap = h.heap.clone();
     }
 
+    //***************for tests, delete later******************
     public Graph.Node[] getHeapArray() {
         return this.heap.clone();
     }
@@ -32,6 +39,7 @@ public class MaxHeap {
                 return;
             }
             this.heap[i] = this.heap[this.size - 1];
+            this.heap[i].setHeapIndex(i);
             this.heap[this.size - 1] = null;
 
             this.size--;
@@ -50,7 +58,7 @@ public class MaxHeap {
     }
 
     public void decreaseKey(int i, int diff) {
-        if (i > -1 && i < size && diff < this.heap[i].getNeighborhoodWeight() - this.heap[i].getWeight()) {
+        if (i > -1 && i < size && diff <= this.heap[i].getNeighborhoodWeight() - this.heap[i].getWeight()) {
             this.heap[i].decreaseNeighborhoodWeight(diff);
             heapifyDown(i);
         }
@@ -78,9 +86,12 @@ public class MaxHeap {
 
         if (biggest > i) {
             //swap <->
-            Graph.Node temp = this.heap[i];
-            this.heap[i] = this.heap[biggest];
-            this.heap[biggest] = temp;
+//            Graph.Node temp = this.heap[i];
+//            this.heap[i] = this.heap[biggest];
+//            this.heap[i].setHeapIndex(i);
+//            this.heap[biggest] = temp;
+//            this.heap[biggest].setHeapIndex(biggest);
+            swap(i,biggest);
 
             heapifyDown(biggest);
         }
@@ -89,14 +100,26 @@ public class MaxHeap {
     private void heapifyUp(int i) {
         int p = getParent(i);
         while (i > 0 && getKey(i) > getKey(p)) {
-            //swap <->
-            Graph.Node temp = this.heap[i];
-            this.heap[i] = this.heap[p];
-            this.heap[p] = temp;
+//            //swap <->
+//            Graph.Node temp = this.heap[i];
+//            this.heap[i] = this.heap[p];
+//            this.heap[p] = temp;
+            swap(i,p);
 
             i = p;
             p = getParent(i);
         }
+    }
+
+    private void swap(int i, int j) {
+        //swap
+        Graph.Node temp = this.heap[i];
+        this.heap[i] = this.heap[j];
+        this.heap[j] = temp;
+
+        //maintain node's heap index
+        this.heap[i].setHeapIndex(i);
+        this.heap[j].setHeapIndex(j);
     }
 
     private int getParent(int i) {
