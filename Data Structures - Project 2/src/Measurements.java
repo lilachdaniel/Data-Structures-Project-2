@@ -81,9 +81,9 @@ public class Measurements {
             edges[i] = new Pair(x-1,y-1);
         }
 
-        for (int i = 1; i < choices.length; i++)
-            if (choices[i] == choices[i-1])
-                System.out.println("DUPLICATES");
+//        for (int i = 1; i < choices.length; i++)
+//            if (choices[i] == choices[i-1])
+//                System.out.println("DUPLICATES");
 
         return edges;
     }
