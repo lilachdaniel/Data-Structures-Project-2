@@ -3,11 +3,11 @@ public class Tests {
     //tests for MaxHeap
 
     public static void main(String[] args) {
-        testHeap(200, 60, 50);
+        // testHeap(200, 60, 50);
         // testList(100, 500);
-        testHashTable(15,200,100);
+        // testHashTable(15,200,100);
 
-        testGraph(20000, 400, 200);
+        testGraph(5000, 700, 300);
     }
 
     public static void testHeap(int numHeap, int numIterations, int heapSize) {
